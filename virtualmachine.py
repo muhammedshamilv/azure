@@ -2,6 +2,8 @@ from azure.identity import AzureCliCredential
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.network import NetworkManagementClient
 from azure.mgmt.compute import ComputeManagementClient
+from azure.mgmt.network.models import NetworkSecurityGroup
+from azure.mgmt.network.models import SecurityRule
 
 credential = AzureCliCredential()
 
@@ -9,7 +11,7 @@ subscription_id = "183f18e4-754f-4be4-82d6-94ae8dd571aa"
 
 resource_client = ResourceManagementClient(credential, subscription_id)
 
-RESOURCE_GROUP_NAME = "test"
+RESOURCE_GROUP_NAME = "vmconnect"
 LOCATION = "eastus"
 
 #create resourse group
@@ -29,6 +31,7 @@ SUBNET_NAME = "subnet"
 IP_NAME = "ip"
 IP_CONFIG_NAME = "ip-config"
 NIC_NAME = "nic"
+NSG_NAME="nsg"
 
 network_client = NetworkManagementClient(credential, subscription_id)
 
@@ -72,12 +75,37 @@ ip_address_result = poller.result()
 
 print(f"IP address {ip_address_result}")
 
+# create network security group  
+
+parameters = NetworkSecurityGroup()
+parameters.location = "eastus"
+parameters.security_rules = [SecurityRule(
+        protocol = 'Tcp',
+        access = 'Allow',
+        direction = 'Inbound', 
+        description='Allow SSH port 22',
+        source_address_prefix = '*',
+        destination_address_prefix = '*',
+        source_port_range='*', 
+        destination_port_range='22', 
+        priority=300, 
+        name='SSH')]   
+poller = network_client.network_security_groups.begin_create_or_update(RESOURCE_GROUP_NAME, NSG_NAME, parameters)
+
+nsg_result = poller.result()
+
+print(f"network security group {nsg_result}")
+
+
 # create network interface
 
 poller = network_client.network_interfaces.begin_create_or_update(RESOURCE_GROUP_NAME,
     NIC_NAME, 
     {
         "location": LOCATION,
+        'network_security_group': {
+        'id': nsg_result.id
+            },
         "ip_configurations": [ {
             "name": IP_CONFIG_NAME,
             "subnet": { "id": subnet_result.id },
@@ -105,7 +133,7 @@ poller = compute_client.virtual_machines.begin_create_or_update(RESOURCE_GROUP_N
         "location": LOCATION,
         "storage_profile": {
             "image_reference": {
-                "publisher": 'hamon',
+                "publisher": 'Canonical',
                 "offer": "UbuntuServer",
                 "sku": "16.04.0-LTS",
                 "version": "latest"
