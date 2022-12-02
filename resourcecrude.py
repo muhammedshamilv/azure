@@ -2,12 +2,14 @@ import pdb
 from flask import Flask,request,jsonify
 from azure.identity import AzureCliCredential
 from azure.mgmt.resource import ResourceManagementClient
+from virtualmachine import create_vm
+import settings 
 
 app = Flask(__name__)
 
 credential = AzureCliCredential()
 
-subscription_id = "183f18e4-754f-4be4-82d6-94ae8dd571aa"
+subscription_id = settings.subscription_id
 
 client = ResourceManagementClient(credential, subscription_id)
 
@@ -20,7 +22,7 @@ def main():
     return "Dev-anand Welcome Page"
 
 @app.route('/create/resource/group',methods=['POST'])
-def resourcegroup():
+def resource_group():
     req_data = request.get_json()
     rgname = req_data['rgname']
     rg=client.resource_groups.create_or_update(rgname, resource_group_params)
@@ -31,7 +33,7 @@ def resourcegroup():
     return jsonify(response)
 
 @app.route('/list/resource/group',methods=['GET'])
-def listresourcegroup():
+def list_resource_group():
     list_of_resource_groups = client.resource_groups.list()
     groups=[]
     for rg in list_of_resource_groups:
@@ -39,7 +41,7 @@ def listresourcegroup():
     return jsonify(groups)
 
 @app.route('/list/resource/bygroup',methods=['GET'])
-def listresource():
+def list_resource():
     req_data = request.get_json()
     rgname = req_data['rgname']
     resource_list = client.resources.list_by_resource_group(rgname)
@@ -49,18 +51,23 @@ def listresource():
         rg_list.append(resource.name)
     return jsonify(rg_list)
 
-
 @app.route('/list/all/resource/',methods=['GET'])
-def listallresource():
+def list_all_resource():
     resource_list = client.resources.list()
     rg_list=[]
     for resource in resource_list:
         rg_list.append(resource.name)
     return jsonify(rg_list)
 
+@app.route('/create/vm',methods=['POST'])
+def vm():
+    req_data = request.get_json()
+    response=create_vm(**req_data)
+    return jsonify(response)
+
 
 @app.route('/delete/resource/group',methods=['POST'])
-def deleteresourcegroup():
+def delete_resource_group():
     req_data = request.get_json()
     rgname = req_data['rgname']
     delete_async_op = client.resource_groups.begin_delete(rgname)
