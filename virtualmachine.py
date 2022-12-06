@@ -13,7 +13,6 @@ subscription_id = settings.subscription_id
 
 resource_client = ResourceManagementClient(credential, subscription_id)
 
-rgname = "vmconnect"
 LOCATION = "eastus"
 
 
