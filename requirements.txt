@@ -6,3 +6,5 @@ azure-mgmt-network
 azure-identity
 azure-cli
 azure-mgmt-monitor
+python-dotenv
+
