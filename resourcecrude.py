@@ -3,6 +3,7 @@ from flask import Flask,request,jsonify
 from azure.identity import AzureCliCredential
 from azure.mgmt.resource import ResourceManagementClient
 from virtualmachine import create_vm
+from metric_alert import metric
 import settings 
 
 app = Flask(__name__)
@@ -65,6 +66,11 @@ def vm():
     response=create_vm(**req_data)
     return jsonify(response)
 
+@app.route('/create/metric',methods=['POST'])
+def vm():
+    req_data = request.get_json()
+    response=metric(**req_data)
+    return jsonify(response)
 
 @app.route('/delete/resource/group',methods=['POST'])
 def delete_resource_group():
