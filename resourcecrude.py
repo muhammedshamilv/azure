@@ -83,8 +83,9 @@ def create_metric():
 def get_cost():
     args = request.args
     rgname=args.get('rgname')
-    time= int(args.get('time')) 
-    response=cost_bill(rgname=rgname,time=time)
+    start_date=args.get('start_date')
+    end_date=args.get('end_date')
+    response=cost_bill(rgname=rgname,start_date=start_date,end_date=end_date)
     return response
     
 @app.route('/get/vms',methods=['GET'])

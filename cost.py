@@ -5,14 +5,11 @@ from azure.mgmt.costmanagement.models import QueryDefinition, QueryDataset, Quer
 from azure.identity import AzureCliCredential
 subscription_id = settings.subscription_id
 
-
 credential = AzureCliCredential()
 
-
 client = CostManagementClient(credential)
-def cost_bill(rgname,time):
-    maxDateInPast = ((datetime.now(timezone.utc))-timedelta(days=time))
-    time_period=QueryTimePeriod(from_property=maxDateInPast, to=datetime.now(timezone.utc))
+def cost_bill(rgname,start_date,end_date):
+    time_period=QueryTimePeriod(from_property=start_date, to=end_date)
     query_aggregation = dict()
     query_aggregation["totalCost"] = QueryAggregation(name="Cost", function="Sum") 
     query_aggregation["totalCostUSD"] = QueryAggregation(name="CostUSD", function="Sum")
