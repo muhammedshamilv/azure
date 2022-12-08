@@ -4,6 +4,7 @@ from azure.identity import AzureCliCredential
 from azure.mgmt.resource import ResourceManagementClient
 from virtualmachine import create_vm
 from metric_alert import metric
+from cost import cost_bill
 import settings 
 
 app = Flask(__name__)
@@ -67,10 +68,18 @@ def vm():
     return jsonify(response)
 
 @app.route('/create/metric',methods=['POST'])
-def vm():
+def create_metric():
     req_data = request.get_json()
     response=metric(**req_data)
     return jsonify(response)
+
+@app.route('/get/cost',methods=['GET'])
+def get_cost():
+    args = request.args
+    rgname=args.get('rgname')
+    time= int(args.get('time')) 
+    response=cost_bill(rgname=rgname,time=time)
+    return response
 
 @app.route('/delete/resource/group',methods=['POST'])
 def delete_resource_group():
