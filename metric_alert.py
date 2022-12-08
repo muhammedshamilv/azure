@@ -6,10 +6,11 @@ from azure.mgmt.monitor.models import RuleEmailAction
 from azure.mgmt.compute import ComputeManagementClient
 from azure.common.credentials import ServicePrincipalCredentials
 from azure.identity import AzureCliCredential
+import settings
 credential = AzureCliCredential()
 subscription_id = settings.subscription_id
 
-def metric(virtualmachine,rgname,rulename,**kwargs)
+def metric(virtualmachine,rgname,rulename,**kwargs):
     compute_client = ComputeManagementClient(credential, subscription_id)
     vm_list = compute_client.virtual_machines.list(rgname)
     for vm in vm_list:
