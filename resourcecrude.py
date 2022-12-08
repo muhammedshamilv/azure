@@ -6,6 +6,7 @@ from virtualmachine import create_vm
 from metric_alert import metric
 from cost import cost_bill
 from vm_list import list_vm
+from manage_vm import start_vm,restart_vm,stop_vm
 import settings 
 
 app = Flask(__name__)
@@ -90,6 +91,27 @@ def get_cost():
 def get_vm():
     response=list_vm()
     return jsonify(response)
+
+# required body items rgname,vm_name
+@app.route('/start/vm',methods=['POST'])
+def start():
+    req_data = request.get_json()
+    response=start_vm(**req_data)
+    return response
+
+# required body items rgname,vm_name
+@app.route('/restart/vm',methods=['POST'])
+def restart():
+    req_data = request.get_json()
+    response=restart_vm(**req_data)
+    return response
+
+# required body items rgname,vm_name
+@app.route('/stop/vm',methods=['POST'])
+def stop():
+    req_data = request.get_json()
+    response=stop_vm(**req_data)
+    return response
 
 # required body item rgname
 @app.route('/delete/resource/group',methods=['POST'])
