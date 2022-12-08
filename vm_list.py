@@ -7,15 +7,10 @@ credential = AzureCliCredential()
 
 compute_client = ComputeManagementClient(credential, subscription_id)
 
-vm_list = compute_client.virtual_machines.list_all()
-# vm_list = compute_client.virtual_machines.list('resource_group_name')
-i= 0
-for vm in vm_list:
-    array = vm.id.split("/")
-    resource_group = array[4]
-    vm_name = array[-1]
-    statuses = compute_client.virtual_machines.instance_view(resource_group, vm_name).statuses
-    status = len(statuses) >= 2 and statuses[1]
-
-    if status and status.code == 'PowerState/running':
-        print(vm_name)
+def list_vm():
+    vm_list = compute_client.virtual_machines.list_all()
+    # vm_list = compute_client.virtual_machines.list('resource_group_name')
+    vm_names=[]
+    for vm in vm_list:
+        vm_names.append(vm.name)
+    return vm_names 

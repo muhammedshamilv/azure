@@ -17,7 +17,7 @@ LOCATION = "eastus"
 
 
 def create_vm(rgname, **kwargs):
-    #create resourse group
+    #create resource group
     rg_result = resource_client.resource_groups.create_or_update(rgname,
         {
             "location": LOCATION

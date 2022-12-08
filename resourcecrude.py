@@ -5,6 +5,7 @@ from azure.mgmt.resource import ResourceManagementClient
 from virtualmachine import create_vm
 from metric_alert import metric
 from cost import cost_bill
+from vm_list import list_vm
 import settings 
 
 app = Flask(__name__)
@@ -42,10 +43,11 @@ def list_resource_group():
         groups.append(rg.name)
     return jsonify(groups)
 
+# required parameter rgname
 @app.route('/list/resource/bygroup',methods=['GET'])
 def list_resource():
-    req_data = request.get_json()
-    rgname = req_data['rgname']
+    args = request.args
+    rgname=args.get('rgname')
     resource_list = client.resources.list_by_resource_group(rgname)
     resources=list(resource_list)
     rg_list=[]
@@ -61,18 +63,21 @@ def list_all_resource():
         rg_list.append(resource.name)
     return jsonify(rg_list)
 
+# required body item rgname
 @app.route('/create/vm',methods=['POST'])
 def vm():
     req_data = request.get_json()
     response=create_vm(**req_data)
     return jsonify(response)
 
+# required body items virtualmachine,rgname,rulename
 @app.route('/create/metric',methods=['POST'])
 def create_metric():
     req_data = request.get_json()
     response=metric(**req_data)
     return jsonify(response)
 
+# required parameter rgname,time(days)
 @app.route('/get/cost',methods=['GET'])
 def get_cost():
     args = request.args
@@ -80,7 +85,13 @@ def get_cost():
     time= int(args.get('time')) 
     response=cost_bill(rgname=rgname,time=time)
     return response
+    
+@app.route('/get/vms',methods=['GET'])
+def get_vm():
+    response=list_vm()
+    return jsonify(response)
 
+# required body item rgname
 @app.route('/delete/resource/group',methods=['POST'])
 def delete_resource_group():
     req_data = request.get_json()
