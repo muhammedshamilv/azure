@@ -27,4 +27,4 @@ def cost_bill(rgname,start_date,end_date):
     cost_sum =0
     for row in result.as_dict()['rows']:
         cost_sum += row[1]
-    return (f"Cost for [{time}] days for resource group [{rgname}] is [{cost_sum}] USD")
+    return (f"Cost of {rgname} from {start_date} to {end_date} is {cost_sum} USD")
