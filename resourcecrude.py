@@ -78,7 +78,7 @@ def create_metric():
     response=metric(**req_data)
     return jsonify(response)
 
-# required parameter rgname,time(days)
+# required parameter rgname,start_date,end_date
 @app.route('/get/cost',methods=['GET'])
 def get_cost():
     args = request.args
